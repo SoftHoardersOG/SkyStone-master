@@ -12,6 +12,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
+import org.openftc.easyopencv.OpenCvCamera;
+import org.openftc.easyopencv.OpenCvCameraFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,22 +24,9 @@ import static org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit.M
 
 
 public class RegionalaRed extends LinearOpMode {
+    OpenCvCamera cam1;
 
     Hardware robot = new Hardware();
-
-    final String KEY = "ASHFs7r/////AAABmbSiCe6Dq03flLd+mIyA0Hsp+FgwD3zZqmqX01p8K9eqFha+bq9YuPgTU4hPEPKUwxfYw1u5aYTuEtoXw/2shsdd7e1Cu0rLJ5iHnFlxwYLB1BFjZrIHHTqoNC6oh3nQy4SAwz7q9XULkx5IwZGVcZynRXDmdi+dWLxqovRMmQ5yTbI0Smh1IvMPFsPVGTVRqHZuRPVymZAFuUUD5aIsK0CuYjljG2DDCK+2NWq7flga/KCGx7OdaUUL8Jem9bfHbxmMbOv06+rPPWLCjy74c5CJtqTfL24U9tda2UB/v0KFMlVzKvzXEt0Et0OkIBcgn9S+aaV7xYy7vEJ25ofYwG4hEhmuLMsxwmtKRGDC3eDf";
-
-    WebcamName cam;
-    VuforiaLocalizer Vuf;
-    VuforiaLocalizer.Parameters param;
-    VuforiaTrackables targets;
-    public VuforiaTrackables imagini = null;
-    List<VuforiaTrackable> allTrackables = new ArrayList<VuforiaTrackable>();
-
-    OpenGLMatrix lastLocation;
-
-    boolean seen = false;
-    double x,y;
 
     public double asta;
 
@@ -52,50 +41,6 @@ public class RegionalaRed extends LinearOpMode {
     public enum Direction{
         FRONT, BACK, LEFT, RIGHT;
     }
-
-
-  /*  public Position getPosition(){
-        if(x < -70)
-            return Position.RIGHT;
-        else if(x > 140)
-            return Position.LEFT;
-        else
-            return Position.MIDDLE;
-    }*/
-
-    public void setupVuforia(){
-        cam = hardwareMap.get(WebcamName.class, "camera");
-
-        param = new VuforiaLocalizer.Parameters(R.id.cameraMonitorViewId);
-        param.vuforiaLicenseKey = KEY;
-
-        param.cameraName = cam;
-        Vuf = ClassFactory.createVuforiaLocalizer(param);
-
-        targets = Vuf.loadTrackablesFromAsset("Skystone");
-        allTrackables.addAll(targets);
-    }
-
-    public void tracking() {
-        for(int i=0;i<5000;i++) {
-            for (VuforiaTrackable trackable : allTrackables) {
-                OpenGLMatrix pos = ((VuforiaTrackableDefaultListener) trackable.getListener()).getUpdatedRobotLocation();
-                if (pos != null) {
-                    lastLocation = pos;
-                }
-            }
-            if (lastLocation != null) {
-                seen = true;
-                x = lastLocation.getTranslation().get(0);
-                y = lastLocation.getTranslation().get(1);
-//                telemetry.addData("x", x);
-//                telemetry.addData("y", y);
-//                telemetry.addData("Position", getPosition());
-//                telemetry.update();
-            }
-        }
-    }
-
 
     double unghi(double u) {
         if (u < 0)
@@ -163,7 +108,7 @@ public class RegionalaRed extends LinearOpMode {
                 minpow2 = -0.2;
         }
 
-        while (opModeIsActive() && !isStopRequested() && (remaining > error || glis || rot || glisfinal)) {
+        while (opModeIsActive() && !isStopRequested() && (remaining > error || glis || rot || glisfinal || !stop)) {
             current = unghi(robot.imu.getAngularOrientation().firstAngle);
             if (angle > 0) {
                 if (target < current && current - target > 180) {
@@ -914,27 +859,141 @@ public class RegionalaRed extends LinearOpMode {
     }
 
     private void Autonomie_Stanga(){
+        gyroTurnV5(10-robot.imu.getAngularOrientation().firstAngle,false,0,0,null);
+        mersTicksuri(70, Direction.FRONT,0.3,null,0,0,false,true,false);
+        mersTicksuri(43, Direction.BACK,1,robot.rotatie,30,0.6,false,false,true);
+
+        gyroTurnV5(90-robot.imu.getAngularOrientation().firstAngle, false,0,0,null);
+
+
+        mersTicksuri(190, Direction.BACK,1,null,0,0,false,false,false);
+        gyroTurnV5(180-robot.imu.getAngularOrientation().firstAngle,false,1,-900,robot.glisisus);
+
+        robot.placad.setPosition(0.35);  //0.35
+        robot.placas.setPosition(0.2);  //0.2
+        mersDistanta(0.2,robot.rotatie,1500,0.6);
+
+        robot.placad.setPosition(0.5);  //0.35
+        robot.placas.setPosition(0.45);  //0.2
+        sleep(300);
+        mersTicksuri(10, Direction.FRONT,0.6,null,0,0,false,false,false);
+/***
+ * baa
+ * count ticks pt inainte sa FACEM ARCUL CA SA STI, CAT NE INTOARCEM CU PLACA
+ */
+        Arc(Direction.FRONT, Direction.RIGHT, 10, 90, robot.glisisus, -600, 0.7, robot.rotatie, 100, 0.7);// de fact simutan motor
+
+        robot.placad.setPosition(0.2);
+        robot.placas.setPosition(0);
+        Redreseaza(90, false);
+
+        mersTicksuri(145 , Direction.FRONT,1,robot.glisisus,0,0.7,false,false,false);
+        gyroTurnV5(55-robot.imu.getAngularOrientation().firstAngle,false,0.4,200,robot.rotatie);
+        // Redreseaza(300, false);
+        mersTicksuri(45, Direction.FRONT, 0.3, null,0,0,false,true,false);//ia stone
+
+        mersTicksuri(40, Direction.BACK,1,robot.rotatie,0,0.5,false,false,true); // se intoarce
+        gyroTurnV5(90-robot.imu.getAngularOrientation().firstAngle,false,0,0,null);
+
+        mersTicksuri(140, Direction.BACK,1,null,0,0,false,false,false);
+        mersTicksuri(20, Direction.BACK,1,robot.glisisus,-1150,0.8,false,false,false);
+        robot.placad.setPosition(0.5);
+        robot.placas.setPosition(0.45);
+
+        // robot.brat.setPosition(0.2);
+        //GoToPosition(robot.rotatie,1500,0.8);
+        // Gliseaza(robot.glisisus,-1150,0.8, robot.rotatie,1500,0.8);
+
+        mersTicksuri(20, Direction.BACK,1,robot.rotatie,1500,0.8,false,false,false);
+        mersTicksuri(20 , Direction.BACK,1,robot.glisisus,-850,0.6,false,false,false);
+        /***
+         * BAAAA
+         * DE AFCUT SIMULTAN MERSUL DE #) CENTIMETRIIIIIII CU CELELALTE ACTIUNI(LA CARE PASTRAM ORDINEA)
+         */
+        robot.brat.setPosition(0.2);
+        robot.placad.setPosition(0.2);
+        robot.placas.setPosition(0);
+
+
+        GoToPosition(robot.glisisus,-1200,1);
+        GoToPosition(robot.rotatie, 50, 0.6);
+
+
+        mersTicksuri(90, Direction.FRONT,1,robot.glisisus,0,0.6,false,false,false);
+
 
     }
 
     private void Autonomie_Dreapta(){
+        gyroTurnV5(-25-robot.imu.getAngularOrientation().firstAngle,false,0,0,null);
+        mersTicksuri(70, Direction.FRONT,0.3,null,0,0,false,true,false);
+        mersTicksuri(45, Direction.BACK,1,robot.rotatie,30,0.6,false,false,true);
+
+        gyroTurnV5(-90-robot.imu.getAngularOrientation().firstAngle, false,0,0,null);
+
+
+        mersTicksuri(200, Direction.FRONT,1,null,0,0,false,false,false);
+        gyroTurnV5(-180-robot.imu.getAngularOrientation().firstAngle,false,1,-900,robot.glisisus);
+
+        robot.placad.setPosition(0.35);  //0.35
+        robot.placas.setPosition(0.2);  //0.2
+        mersDistanta(0.2,robot.rotatie,1500,0.6);
+
+        robot.placad.setPosition(0.5);  //0.35
+        robot.placas.setPosition(0.45);  //0.2
+        sleep(300);
+        mersTicksuri(10, Direction.FRONT,0.6,null,0,0,false,false,false);
+
+        Arc(Direction.FRONT, Direction.RIGHT, 10, 90, robot.glisisus, -600, 0.7, robot.rotatie, 100, 0.7);// de fact simutan motor
+
+        robot.placad.setPosition(0.2);
+        robot.placas.setPosition(0);
+        Redreseaza(90, false);
+
+        mersTicksuri(165 , Direction.FRONT,1,robot.glisisus,0,0.7,false,false,false);
+        gyroTurnV5(55-robot.imu.getAngularOrientation().firstAngle,false,0.4,200,robot.rotatie);
+        // Redreseaza(300, false);
+        mersTicksuri(45, Direction.FRONT, 0.3, null,0,0,false,true,false);//ia stone
+
+        mersTicksuri(35, Direction.BACK,1,robot.rotatie,0,0.5,false,false,true); // se intoarce
+        gyroTurnV5(90-robot.imu.getAngularOrientation().firstAngle,false,0,0,null);
+
+        mersTicksuri(160, Direction.BACK,1,null,0,0,false,false,false);
+        mersTicksuri(30, Direction.BACK,1,robot.glisisus,-1150,0.8,false,false,false);
+        robot.placad.setPosition(0.5);
+        robot.placas.setPosition(0.45);
+
+        // robot.brat.setPosition(0.2);
+        GoToPosition(robot.rotatie,1500,0.8);
+        // Gliseaza(robot.glisisus,-1150,0.8, robot.rotatie,1500,0.8);
+        mersTicksuri(30 , Direction.BACK,0.8,robot.glisisus,-850,0.6,false,false,false);
+        /***
+         * BAAAA
+         * DE AFCUT SIMULTAN MERSUL DE #) CENTIMETRIIIIIII CU CELELALTE ACTIUNI(LA CARE PASTRAM ORDINEA)
+         */
+        robot.brat.setPosition(0.2);
+        robot.placad.setPosition(0.2);
+        robot.placas.setPosition(0);
+
+        GoToPosition(robot.glisisus,-1200,1);
+        GoToPosition(robot.rotatie, 50, 0.6);
+
+
+        mersTicksuri(90, Direction.FRONT,1,robot.glisisus,0,0.6,false,false,false);
 
     }
 
     private void Autonomie_Mijloc(){
-        telemetry.addLine(String.format("Unghi 1 : %s", robot.imu.getAngularOrientation()));
         gyroTurnV5(-10,false,0,0,null);
-        telemetry.addLine(String.format("Unghi 2 : %s", robot.imu.getAngularOrientation()));
         mersTicksuri(60, Direction.FRONT,0.2,null,0,0,false,true,false);
         mersTicksuri(28, Direction.BACK,1,robot.rotatie,30,0.5,false,false,true);
 
         gyroTurnV5(-90-robot.imu.getAngularOrientation().firstAngle, false,0,0,null);
 
-        telemetry.addLine(String.format("Unghi 3 : %s", robot.imu.getAngularOrientation()));
 
         mersTicksuri(195, Direction.FRONT,1,null,0,0,false,false,false);
         gyroTurnV5(-180-robot.imu.getAngularOrientation().firstAngle,false,1,-900,robot.glisisus);
-        telemetry.addLine(String.format("Unghi 4 : %s", robot.imu.getAngularOrientation()));
+
         mersDistanta(0.2,robot.rotatie,1500,0.6);
 
         if(!isStopRequested() && opModeIsActive()) {
@@ -945,8 +1004,7 @@ public class RegionalaRed extends LinearOpMode {
         mersTicksuri(15, Direction.FRONT,0.6,null,0,0,false,false,false);
 
         Arc(Direction.FRONT, Direction.RIGHT, 10, 90, robot.glisisus, -600, 0.7, robot.rotatie, 100, 0.7);// de fact simutan motor
-        telemetry.addLine(String.format("Unghi 5 : %s", robot.imu.getAngularOrientation()));
-        telemetry.update();
+
         if(!isStopRequested() && opModeIsActive()) {
             robot.placad.setPosition(0.2);
             robot.placas.setPosition(0);
@@ -984,20 +1042,33 @@ public class RegionalaRed extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        robot.init(hardwareMap);
-        telemetry.addLine("Robot is initialised.");
-        telemetry.update();
 
+        robot.init(hardwareMap);
+        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        cam1 = OpenCvCameraFactory.getInstance().createWebcam(robot.web, cameraMonitorViewId);
+
+        for(int i=1; i<=100; i++)
+            cam1.openCameraDevice();
+
+
+        cam1.setPipeline(new proces2());
+        cam1.startStreaming(640,480);
+
+        telemetry.addLine("Robot is initialised");
+        telemetry.update();
         waitForStart();
+        String motori = Test2.pos;
+        telemetry.addData("Pozitie", motori);
+        telemetry.update();
+        //cam1.stopStreaming();
 
         mersTicksuri(35, Direction.FRONT,1, robot.rotatie, 200, 0.4, true, false, false);
-        //        DcMotor []  motoare = {robot.glisisus,robot.rotatie,robot.glisisus};
-//        double [] puteri = {1,0.5,1};
-//        double [] tickuri = {-900,100,0}
-//   mersSimultan(Direction.BACK,1,motoare,puteri,tickuri);
-        //Arc(Direction.FRONT, Direction.RIGHT, 10, 90, null, -600, 0.7, null, 100, 0.7);// de fact simutan motor
+        if(motori=="left")
+            Autonomie_Stanga();
+        else if(motori=="right")
+            Autonomie_Dreapta();
+        else if(motori=="middle")
+            Autonomie_Mijloc();
 
-
-        Autonomie_Mijloc();
     }
 }

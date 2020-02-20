@@ -11,6 +11,8 @@ import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+
 
 public class Hardware {
 
@@ -21,6 +23,7 @@ public class Hardware {
     public DcMotor back_right = null;
     public DcMotor back_left = null;
 
+    public WebcamName web;
 
     public DcMotor aspira1 = null;
     public DcMotor aspira2 = null;
@@ -122,7 +125,7 @@ public class Hardware {
 
         atins1 = hw.get(DigitalChannel.class, "atins1");
         atins1.setMode(DigitalChannel.Mode.INPUT);
-
+        web = hw.get(WebcamName.class, "cam");
         atins2 = hw.get(DigitalChannel.class, "atins2");
         atins2.setMode(DigitalChannel.Mode.INPUT);
 

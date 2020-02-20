@@ -9,6 +9,8 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.vuforia.Position;
 import org.firstinspires.ftc.teamcode.vuforia.PositionEnum;
 import org.firstinspires.ftc.teamcode.vuforia.SkyStoneLocalizer;
+import org.openftc.easyopencv.OpenCvCamera;
+import org.openftc.easyopencv.OpenCvCameraFactory;
 
 import java.util.Objects;
 
@@ -19,9 +21,10 @@ import static org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit.M
 
 public class RegionalaBlue extends LinearOpMode {
 
+    OpenCvCamera cam1;
+
     Hardware robot = new Hardware();
 
-    SkyStoneLocalizer localizer = new SkyStoneLocalizer();
 
     public double asta;
     double x,y;
@@ -33,87 +36,10 @@ public class RegionalaBlue extends LinearOpMode {
     private final double vit_max = 1;
     private final double lat_robot = 35;
     private final int ridicare = -450;
-    ElapsedTime time = new ElapsedTime();
-
-    public PositionEnum getEnumPosition(Position position) {
-        Objects.requireNonNull(position);
-
-        double x = position.getX();
-
-        if (x < -150) {
-            return PositionEnum.RIGHT;
-        } else if (x >= -150 && x <= 150) {
-            return PositionEnum.CENTER;
-        } else {
-            return PositionEnum.LEFT;
-        }
-
-    }
-
-
-    private double distanta_placa = 30; // in mm
 
     public enum Direction{
         FRONT, BACK, LEFT, RIGHT;
     }
-
-   /* public Position getPosition(){
-        if(x < -70)
-            return Position.RIGHT;
-        else if(x > 140)
-            return Position.LEFT;
-        else
-            return Position.MIDDLE;
-    }
-
-    public void setupVuforia(){
-        cam = hardwareMap.get(WebcamName.class, "cam");
-
-        param = new VuforiaLocalizer.Parameters(R.id.cameraMonitorViewId);
-        param.vuforiaLicenseKey = KEY;
-
-        param.cameraName = cam;
-        Vuf = ClassFactory.createVuforiaLocalizer(param);
-
-        targets = Vuf.loadTrackablesFromAsset("Skystone");
-        allTrackables.addAll(targets);
-    }
-
-    public void tracking() {
-        for(int i=0;i<5000;i++) {
-            for (VuforiaTrackable trackable : allTrackables) {
-                OpenGLMatrix pos = ((VuforiaTrackableDefaultListener) trackable.getListener()).getUpdatedRobotLocation();
-                if (pos != null) {
-                    lastLocation = pos;
-                }
-            }
-            if (lastLocation != null) {
-                seen = true;
-                x = lastLocation.getTranslation().get(0);
-                y = lastLocation.getTranslation().get(1);
-//                telemetry.addData("x", x);
-//                telemetry.addData("y", y);
-//                telemetry.addData("Position", getPosition());
-//                telemetry.update();
-            }
-        }
-    }*/
-
-   public void tracking(){
-       for(int i=0;i<=1000;i++){
-           Position position = localizer.getCurrentPosition();
-           if(position.isValidPosition()) {
-               x = position.getX();
-               y = position.getX();
-              /* telemetry.addLine(String.format("Target found (x=%s y=%s)", position.getX(), position.getY()));
-               PositionEnum value = getEnumPosition(position);
-               telemetry.addLine(String.format("Position: %s", value));*/
-           } /*else {
-               telemetry.addLine("No position!");
-           }
-           telemetry.update();*/
-       }
-   }
 
     double unghi(double u) {
         if (u < 0)
@@ -147,14 +73,14 @@ public class RegionalaBlue extends LinearOpMode {
         double fl,fr,bl,br;
         if(dir2 == Direction.RIGHT){
             fl = bl = ex;
-            fr = br = in;
+            fr = in; br = 0;
         } else {
-            fl = bl = in;
+            fl = in; bl = 0;
             fr = br = ex;
         }
         if(dir1 == Direction.BACK){
-            fl = bl = -fl;
-            fr = br = -fr;
+            fl = -fl; fr = -fr;
+            bl = -bl; br = -br;
         }
 
         double curent1=0, minpow1= -0.15;
@@ -180,7 +106,7 @@ public class RegionalaBlue extends LinearOpMode {
         }
 
 
-        while (opModeIsActive() && !isStopRequested() && remaining > error || glis || rot ) {
+        while (opModeIsActive() && !isStopRequested() && (remaining > error || glis || rot || !stop)) {
             current = unghi(robot.imu.getAngularOrientation().firstAngle);
             if (angle > 0) {
                 if (target < current && current - target > 180) {
@@ -197,15 +123,18 @@ public class RegionalaBlue extends LinearOpMode {
                 }
             }
 
-            if(remaining > error && !stop){
-                robot.stopRobot();
-                stop = true;
+            if(!stop) {
+                if (remaining < error) {
+                    robot.stopRobot();
+                    stop = true;
+                }
+                else {
+                    robot.front_left.setPower(fl);
+                    robot.back_left.setPower(bl);
+                    robot.front_right.setPower(fr);
+                    robot.back_right.setPower(br);
+                }
             }
-
-            robot.front_left.setPower(fl);
-            robot.back_left.setPower(0);
-            robot.front_right.setPower(fr);
-            robot.back_right.setPower(br);
 
             if(glisisus != null ){
                 if(glis) {
@@ -626,61 +555,6 @@ public class RegionalaBlue extends LinearOpMode {
     }
 
 
-    private void Gliseaza(DcMotor glisisus, double ticks1, double pow1, DcMotor rotatie, double ticks2, double pow2){
-        double curent1 = glisisus.getCurrentPosition();
-        double curent2 = rotatie.getCurrentPosition();
-        double minpow1 = -0.15;
-        double minpow2 = 0;
-
-        double power1 = pow2 + 0.2;
-        double power2 = pow2 - 0.3;
-        if (ticks2 <= 350 && ticks2 >= 40)
-            minpow2 = 0.2;
-        if(ticks2>=600 && ticks2<= 700)
-            minpow2 = -0.05;
-        if (ticks2 >= 710 && ticks2 <= 1300)
-            minpow2 = -0.2;
-
-        while( ((glisisus.getCurrentPosition() < ticks1 && curent1 <= ticks1) ||(glisisus.getCurrentPosition() > ticks1 && curent1 >= ticks1))
-            || ((rotatie.getCurrentPosition() < ticks2 && curent2 <= ticks2) || (rotatie.getCurrentPosition() > ticks2 && curent2 >= ticks2) )
-              && opModeIsActive() && !isStopRequested()) {
-
-            if(((glisisus.getCurrentPosition() >= ticks1 && curent1 <= ticks1) ||(glisisus.getCurrentPosition() <= ticks1 && curent1 >= ticks1))) {
-                glisisus.setPower(minpow1);
-            }
-            else {
-                if (curent1 <= ticks1) {
-                    glisisus.setPower(pow1);
-                } else {
-                    glisisus.setPower(-pow1);
-                }
-            }
-            if((rotatie.getCurrentPosition() >= ticks2 && curent2 <= ticks2) || (rotatie.getCurrentPosition() <= ticks2 && curent2 >= ticks2) ){
-                rotatie.setPower(minpow2);
-            }
-            else{
-                if (curent2 <= ticks2) {
-
-                    if (rotatie.getCurrentPosition() < ticks2) {
-                        if (robot.rotatie.getCurrentPosition() >= 550) {
-                            pow2 = power2;
-                        } else {
-                            pow2 = power1;
-                        }
-                        rotatie.setPower(pow2);
-                    }
-                } else {
-                    if (rotatie.getCurrentPosition() > ticks2) {
-                        if (robot.rotatie.getCurrentPosition() >= 550) {
-                            pow2 = power1;
-                        }
-                        rotatie.setPower(-pow2);
-                    }
-                }
-            }
-        }
-    }
-
     private void mersDistanta(double pow, DcMotor motor, double ticks, double power){
         double curent=0, minpow=0,power1=0,power2=0;
 
@@ -817,7 +691,7 @@ public class RegionalaBlue extends LinearOpMode {
 
 
         mersTicksuri(200, Direction.BACK,1,null,0,0,false,false,false);
-        gyroTurnV5(-176-robot.imu.getAngularOrientation().firstAngle,false,1,-900,robot.glisisus);
+        gyroTurnV5(-180-robot.imu.getAngularOrientation().firstAngle,false,1,-900,robot.glisisus);
 
         robot.placad.setPosition(0.35);  //0.35
         robot.placas.setPosition(0.2);  //0.2
@@ -825,7 +699,7 @@ public class RegionalaBlue extends LinearOpMode {
 
         robot.placad.setPosition(0.5);  //0.35
         robot.placas.setPosition(0.45);  //0.2
-        sleep(300);
+        sleep(1000);
         mersTicksuri(10, Direction.FRONT,0.6,null,0,0,false,false,false);
 /***
  * baa
@@ -873,7 +747,7 @@ public class RegionalaBlue extends LinearOpMode {
     private void Autonomie_Mijloc(){
         gyroTurnV5(10,false,0,0,null);
         mersTicksuri(60, Direction.FRONT,0.2,null,0,0,false,true,false);
-        mersTicksuri(28, Direction.BACK,1,robot.rotatie,30,0.5,false,false,true);
+        mersTicksuri(31, Direction.BACK,1,robot.rotatie,30,0.5,false,false,true);
 
         gyroTurnV5(90-robot.imu.getAngularOrientation().firstAngle, false,0,0,null);
 
@@ -886,20 +760,20 @@ public class RegionalaBlue extends LinearOpMode {
         robot.placad.setPosition(0.5);
         robot.placas.setPosition(0.45);
         sleep(300);
-        mersTicksuri(10, Direction.FRONT,0.6,null,0,0,false,false,false);
+        mersTicksuri(13, Direction.FRONT,0.6,null,0,0,false,false,false);
 
-         Arc(Direction.FRONT, Direction.LEFT, 10, 90, robot.glisisus, -600, 0.7, robot.rotatie, 50, 0.7);// de fact simutan motor
+        Arc(Direction.FRONT, Direction.LEFT, 10, 90, robot.glisisus, -600, 0.7, robot.rotatie, 50, 0.7);// de fact simutan motor
 
         robot.placad.setPosition(0.2);
         robot.placas.setPosition(0);
         Redreseaza(270, false);
 
-        mersTicksuri(155 , Direction.FRONT,1,robot.glisisus,0,0.7,false,false,false);
+        mersTicksuri(150, Direction.FRONT,1,robot.glisisus,0,0.7,false,false,false);
         gyroTurnV5(-55-robot.imu.getAngularOrientation().firstAngle,false,0.6,200,robot.rotatie);
        // Redreseaza(300, false);
-        mersTicksuri(40, Direction.FRONT, 0.3, null,0,0,false,true,false);//ia stone
+        mersTicksuri(45, Direction.FRONT, 0.3, null,0,0,false,true,false);//ia stone
 
-        mersTicksuri(35, Direction.BACK,1,robot.rotatie,0,0.5,false,false,true); // se intoarce
+        mersTicksuri(40, Direction.BACK,1,robot.rotatie,0,0.5,false,false,true); // se intoarce
         gyroTurnV5(-90-robot.imu.getAngularOrientation().firstAngle,false,0,0,null);
 
         mersTicksuri(150, Direction.BACK,1,null,0,0,false,false,false);
@@ -936,7 +810,7 @@ public class RegionalaBlue extends LinearOpMode {
         gyroTurnV5(90-robot.imu.getAngularOrientation().firstAngle, false,0,0,null);
 
 
-        mersTicksuri(190, Direction.FRONT,1,null,0,0,false,false,false);
+        mersTicksuri(182, Direction.FRONT,1,null,0,0,false,false,false);
         gyroTurnV5(180-robot.imu.getAngularOrientation().firstAngle,false,1,-900,robot.glisisus);
 
         robot.placad.setPosition(0.35);  //0.35
@@ -957,7 +831,7 @@ public class RegionalaBlue extends LinearOpMode {
         robot.placas.setPosition(0);
         Redreseaza(270, false);
 
-        mersTicksuri(145 , Direction.FRONT,1,robot.glisisus,0,0.7,false,false,false);
+        mersTicksuri(140 , Direction.FRONT,1,robot.glisisus,0,0.7,false,false,false);
         gyroTurnV5(-55-robot.imu.getAngularOrientation().firstAngle,false,0.4,200,robot.rotatie);
         // Redreseaza(300, false);
         mersTicksuri(45, Direction.FRONT, 0.3, null,0,0,false,true,false);//ia stone
@@ -994,74 +868,36 @@ public class RegionalaBlue extends LinearOpMode {
 
     }
 
-    private void Laterala(Direction dir, double pow, double distance){
-        double fl = 1,bl = 1,fr = 1,br = 1;
-        if(dir == Direction.RIGHT)
-            fr = bl = -1;
-        else
-            fl = br = -1;
-        double initial = robot.back_left.getCurrentPosition();
-        double necesar = distance * TICKSURI_PER_CM;
-        double rem = 15 * TICKSURI_PER_CM;    /// decelerez pe ultimii 15 cm
-        double st = 15 * TICKSURI_PER_CM;
-        boolean ver = true;
-        while(Math.abs(robot.back_left.getCurrentPosition() - initial) < necesar && opModeIsActive() && !isStopRequested()){
-            telemetry.addData("front left", robot.front_left.getPower());
-            telemetry.addData("back left", robot.back_left.getPower());
-            telemetry.addData("front right", robot.front_right.getPower());
-            telemetry.addData("back right", robot.back_right.getPower());
-            telemetry.update();
-            double done = Math.abs(robot.back_left.getCurrentPosition() - initial);
-            double d = necesar - done;  // distanta ramasa
-            if(done < st){
-                double v = 0.4 + 0.6 * done / st;
-                robot.front_left.setPower(v * fl);
-                robot.front_right.setPower(v * fr);
-                robot.back_left.setPower(v * bl);
-                robot.back_right.setPower(v * br);
-            }
-          /*  else if(d < rem){
-                ver=false;
-                double v =  pow * d / rem;
-                if(v < 0.47 * pow)
-                    v=0;
-                robot.front_left.setPower(v * fl);
-                robot.front_right.setPower(v * fr);
-                robot.back_left.setPower(v * bl);
-                robot.back_right.setPower(v * br);
-            }*/
-        }
-        robot.stopRobot();
-    }
 
     @Override
     public void runOpMode() throws InterruptedException
     {
-       robot.init(hardwareMap);
-      // localizer.init(hardwareMap);
-       telemetry.addLine("Robot is initialised.");
-       telemetry.update();
+        robot.init(hardwareMap);
+        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        cam1 = OpenCvCameraFactory.getInstance().createWebcam(robot.web, cameraMonitorViewId);
 
-       waitForStart();
+        for(int i=1; i<=100; i++)
+           cam1.openCameraDevice();
+
+        cam1.setPipeline(new proces());
+        cam1.startStreaming(640,480);
+
+        telemetry.addLine("Robot is initialised");
+        telemetry.addData("Pozitie", Test.pos);
+        telemetry.update();
+        waitForStart();
+        String motori = Test.pos;
+        telemetry.addData("Pozitie", motori);
+        telemetry.update();
+       //cam1.stopStreaming();
+
        mersTicksuri(35, Direction.FRONT,1, robot.rotatie, 200, 0.4, true, false, false);
-//       localizer.activate();
-//       tracking();
-//       telemetry.addData("X:", x);
-//       telemetry.addData("Y:", y);
-//       telemetry.update();
-
-
-      /* if(!seen){
+       if(motori=="left")
            Autonomie_Stanga();
-       }
-       else {
-           if (getPosition() == Position.LEFT)
-               Autonomie_Stanga();
-           else if(getPosition() == Position.MIDDLE)
-               Autonomie_Mijloc();
-           else
-               Autonomie_Dreapta();
-       }*/
-     // Autonomie_Dreapta();
+       else if(motori=="right")
+           Autonomie_Dreapta();
+       else if(motori=="middle")
+           Autonomie_Mijloc();
+
     }
 }

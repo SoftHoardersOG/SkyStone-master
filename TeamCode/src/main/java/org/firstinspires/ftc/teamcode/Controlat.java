@@ -5,7 +5,6 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 import static org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit.MM;
@@ -24,6 +23,8 @@ public class Controlat extends LinearOpMode {
 
     boolean cap;
 
+    boolean reset = false;
+
     private double inc1 = 0;
     private double inc2 = 0;
 
@@ -32,49 +33,13 @@ public class Controlat extends LinearOpMode {
     private int ct = 0;
 
     private int[] initialg = {-900, -1200, -1550, -1900, -450, -850, -1200,-1500,-1850,-2200,-2400,0,0};
-    private int[] rotatie = {1500, 1500, 1500, 1500, 580, 580, 580,580,580,580,580,0,0};//inainte 600
+    private int[] rotatie = {1500, 1500, 1500, 1500, 600, 600, 600,600,600,600,600,0,0};//inainte 600
     private int[] finalg = {-700, -950, -1200, -1550, -300, -650, -850,-1200,-1650,-1900,-2200,0,0};
     // {-600, -900, -1150, -1550, -300, -600, -850,-1200,-1600,-1900,-2200,0,0} inINTE
     private ElapsedTime timedecr = new ElapsedTime();
     private ElapsedTime time = new ElapsedTime();
     private ElapsedTime time2 = new ElapsedTime();
     private ElapsedTime time3 = new ElapsedTime();
-
-    /*public void init_vuforia(){
-        WebcamName camera;
-        camera = hardwareMap.get(WebcamName.class, "camera");
-
-        VuforiaLocalizer.Parameters param = new VuforiaLocalizer.Parameters(R.id.cameraMonitorViewId);
-        param.cameraName = camera;
-       // param.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;
-        param.vuforiaLicenseKey = VUFORIA_KEY;
-        param.cameraMonitorFeedback = VuforiaLocalizer.Parameters.CameraMonitorFeedback.AXES;
-        Vuf = ClassFactory.createVuforiaLocalizer(param);
-       // CameraDevice.getInstance().setFlashTorchMode(true);
-        imagini = Vuf.loadTrackablesFromAsset("Skystone");
-        imagini.get(0).setName("Skystone");
-    }*/
-
- /*   public void tracking() {
-        for(int o=1; o<=5000; o++) {
-            VuforiaTrackable stone = imagini.get(0);
-            OpenGLMatrix pozitie = ((VuforiaTrackableDefaultListener) stone.getListener()).getPose();
-            if(pozitie != null){
-                seen = true;
-                VectorF translatie =  pozitie.getTranslation();
-                x = translatie.get(0);
-                y = translatie.get(1);
-                telemetry.addData("X:", x);
-                telemetry.addData("Y:", y);
-                break;
-
-            }
-            else {
-                telemetry.addLine("NONE");
-            }
-            telemetry.update();
-        }
-    }*/
 
 
     public void Drive() {
@@ -95,23 +60,6 @@ public class Controlat extends LinearOpMode {
         robot.back_right.setPower(-v4);
     }
 
-//public void Stone()
-//{
-//    if(gamepad2.left_bumper)
-//    {
-//        //duce brat pe stone
-//        GoToPosition(robot.rotatie,0,0.5);
-//
-//        robot.brat.setPosition(0.8);
-//        // apuca stone
-//
-//    }
-//
-//        if(gamepad1.right_bumper)
-//        {
-//            robot.brat.setPosition(0.2);
-//        }
-//}
 
     public void Returneaza() {
         if(robot.rotatie == null || robot.glisisus == null)
@@ -137,10 +85,6 @@ public class Controlat extends LinearOpMode {
      * Flag used to disable the flor increment/decrement functionality for a short period.
      */
     private boolean incrementEnabled = true;
-
-    String format(OpenGLMatrix transformationMatrix) {
-        return transformationMatrix.formatAsTransform();
-    }
 
     public void decrEtaj() {
         if (timedecr.seconds() >= 0.25) {
@@ -244,9 +188,11 @@ public class Controlat extends LinearOpMode {
     public void Prinde() {
         if(robot.rotatie == null || robot.brat == null)
             return;
+        if(reset)
+            return;
         if (gamepad2.y) {
             GoToPosition(robot.rotatie, 40, 0.8);
-            robot.brat.setPosition(0.9);
+            robot.brat.setPosition(0.95);
         }
     }
 
@@ -273,6 +219,8 @@ public class Controlat extends LinearOpMode {
 
     public void Etaje(int etaj) {
         if(robot.glisisus == null || robot.rotatie == null)
+            return;
+        if(reset)
             return;
         if (gamepad2.x) {
             GoToPosition(robot.glisisus, initialg[etaj], 1);
@@ -395,8 +343,53 @@ public class Controlat extends LinearOpMode {
 
     }
 
+    public void Resetare(){
+        if(gamepad2.back){
+            reset = !reset;
+            if(reset){
+                telemetry.addLine("Ready to reset");
+                telemetry.addLine("X - ridici glisiera");
+                telemetry.addLine("Y - lasi glisiera");
+                telemetry.addLine("A - invarti brat inauntru");
+                telemetry.addLine("B - invarti brat inafara");
+                telemetry.addLine("RIGHT BUMPER - reset encoders");
+                telemetry.addLine("Back - return to normal");
+                telemetry.update();
+            }
+        }
+        if(reset){
+            if(gamepad2.x){
+                robot.glisisus.setPower(-0.5);
+            }
+            else if(gamepad2.y){
+                robot.glisisus.setPower(0.5);
+            }
+            else {
+                robot.glisisus.setPower(0);
+            }
+            if(gamepad2.a){
+                robot.rotatie.setPower(-0.5);
+            }
+            else if(gamepad2.b){
+                robot.rotatie.setPower(0.5);
+            } else{
+                robot.rotatie.setPower(0);
+            }
+            if(gamepad2.right_bumper){
+                robot.glisisus.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+                robot.glisisus.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                robot.glisisus.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                robot.rotatie.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+                robot.rotatie.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                robot.rotatie.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            }
+        }
+    }
+
     public void Aspira() {// de adaugat a doua roata
         if (robot.aspira1 == null || robot.aspira2 == null || robot.bagad == null || robot.bagas == null)
+            return;
+        if(reset)
             return;
         if (gamepad2.left_bumper) {//collects
             if(robot.a1.getVelocity() > -100)
@@ -465,6 +458,8 @@ public class Controlat extends LinearOpMode {
             telemetry.addLine("brat is empty");
             return;
         }
+        if(reset)
+            return;
         if (gamepad2.b)
             robot.brat.setPosition(0.2);//lasa tata
         else if (gamepad2.a)
@@ -487,6 +482,7 @@ public class Controlat extends LinearOpMode {
         if (gamepad1.back)
             etaj = 0;
     }
+
 
     /**
      *  BARIERA CAP: 0.15 sus
@@ -520,16 +516,17 @@ public class Controlat extends LinearOpMode {
             Ia_Placa();
             Prinde();
             Capstone();
+            Resetare();
             Etaje(etaj);
             ridicare();
             decrEtaj();
-            telemetry.addData("atins1", robot.atins1.getState());
-            telemetry.addData("distanta", robot.distanta.getDistance(MM));
-            telemetry.addData("placa", robot.placa.getDistance(MM));
-            telemetry.addData("atins2", robot.atins2.getState());
-            telemetry.addData("rotatie", robot.rotatie.getCurrentPosition());
-            telemetry.addData("etaj",etaj);
-            telemetry.update();
+//            telemetry.addData("atins1", robot.atins1.getState());
+//            telemetry.addData("distanta", robot.distanta.getDistance(MM));
+//            telemetry.addData("placa", robot.placa.getDistance(MM));
+//            telemetry.addData("atins2", robot.atins2.getState());
+//            telemetry.addData("rotatie", robot.rotatie.getCurrentPosition());
+//            telemetry.addData("etaj",etaj);
+//            telemetry.update();
 
             resetareEtaj();
 
