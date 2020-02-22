@@ -12,6 +12,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
+import org.opencv.core.TickMeter;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 
@@ -229,175 +230,6 @@ public class RegionalaRed extends LinearOpMode {
         Redreseaza(target, false);
         robot.stopRobot();
     }
-
-// public void mersSimultan(double Direction, double powerMers, DcMotor [] motor, double [] power, double [] ticks, Servo ser,int step)
-// {
-//     double curent=0, minpow=0,power1=0,power2=0;
-//
-//     if(motor!=null)
-//     {
-//         curent = motor.getCurrentPosition();
-//         minpow = 0;
-//
-//         power1 = power + 0.2;
-//         power2 = power - 0.3;
-//         if (motor == robot.rotatie) {
-//             if (ticks <= 350 && ticks >= 40)
-//                 minpow = 0.2;
-//             if (ticks >= 710 && ticks <= 1300)
-//                 minpow = -0.2;
-//         }
-//
-//         if (motor == robot.glisisus)
-//             minpow = -0.15;
-//     }
-//     double fl,fr,br,bl;
-//     double speed = -1 * pow;
-//     fl = fr = br = bl = -1;
-//     if(dir == Direction.BACK)
-//         fl = fr = br = bl = 1;
-//     else if(dir == Direction.LEFT)
-//         fl = br = 1;
-//     else if(dir == Direction.RIGHT)
-//         fr = bl = 1;
-//     double initial = robot.back_left.getCurrentPosition();
-//     double necesar = distance * TICKSURI_PER_CM;
-//     double rem = 15 * TICKSURI_PER_CM;    /// decelerez pe ultimii 15 cm
-//     robot.front_left.setPower(speed * fl);
-//     robot.front_right.setPower(speed * fr);
-//     robot.back_right.setPower(speed * br);
-//     robot.back_left.setPower(speed * bl);
-//     boolean ver  = true;
-//     boolean b1 = false, b2= false;
-//     boolean mot = true;
-//
-//     while((Math.abs(robot.back_left.getCurrentPosition() - initial)<necesar && (Math.abs(robot.m.getVelocity()) > 60 || ver))
-//             || (brate && (!b1 || !b2)) ||(motor!=null && mot)
-//             && !isStopRequested() && opModeIsActive() ){
-//         telemetry.addData("in MersTicks ", 1);
-//         telemetry.addData("b1", b1);
-//         telemetry.addData("B2", b2);
-//         telemetry.addData("rotatie", robot.rotatie.getCurrentPosition());
-//         telemetry.update();
-//         if(colectare)
-//         {
-//             if(robot.a1.getVelocity() > -100)
-//                 inc1 = -0.7;
-//             else
-//                 inc1 = 0;
-//
-//             if(robot.a2.getVelocity() < 100)
-//                 inc2 = 0.7;
-//             else
-//                 inc2 = 0;
-//
-//             robot.aspira1.setPower(-0.3 + inc1);
-//             robot.aspira2.setPower(0.3 + inc2);
-//             robot.bagas.setPower(-1);
-//             robot.bagad.setPower(1);
-//
-//             telemetry.addData("a1 velocity", robot.a1.getVelocity());
-//             telemetry.addData("a2 velocity", robot.a2.getVelocity());
-//             telemetry.addData("a1 power", robot.aspira1.getPower());
-//             telemetry.addData("a2 power", robot.aspira2.getPower());
-//             telemetry.update();
-//         }
-//         if(brate){
-//             if (robot.atins1.getState()){
-//                 robot.cs.setPower(1);
-//             }
-//             else{
-//                 b1 = true;
-//                 robot.cs.setPower(0);
-//             }
-//             if (robot.atins2.getState())
-//                 robot.cd.setPower(-1);
-//             else{
-//                 b2 = true;
-//                 robot.cd.setPower(0);
-//             }
-//         }
-//         if(motor!=null) {
-//
-//             if ((curent <=ticks && motor.getCurrentPosition() >= ticks)||(curent >=ticks && motor.getCurrentPosition() <= ticks)) {
-//                 motor.setPower(minpow);
-//                 mot = false;
-//             }
-//             else {
-//                 if (curent <= ticks) {
-//                     if (motor == robot.rotatie) {
-//                         if (robot.rotatie.getCurrentPosition() >= 550) {
-//                             power = power2;
-//                         } else {
-//                             power = power1;
-//                         }
-//                     }
-//                     motor.setPower(power);
-//
-//                 } else {
-//                     if (motor == robot.rotatie && robot.rotatie.getCurrentPosition() >= 550) {
-//                         power = power1;
-//                     }
-//                     motor.setPower(-power);
-//                 }
-//             }
-//         }
-//         double d = necesar - Math.abs(robot.back_left.getCurrentPosition() - initial);
-//         if(d < rem){
-//             ver=false;
-//             double v = -1 * pow * d / rem;
-//             if(v>-0.47 * pow)
-//                 v=0;
-//             robot.front_left.setPower(v * fl);
-//             robot.front_right.setPower(v * fr);
-//             robot.back_left.setPower(v * bl);
-//             robot.back_right.setPower(v * br);
-//         }
-//     }
-//
-//
-//     if(colectare) {
-//         while(robot.distanta.getDistance(MM)>60 && opModeIsActive() && !isStopRequested()){
-//             if(robot.a1.getVelocity() > -100)
-//                 inc1 = -0.7;
-//             else
-//                 inc1 = 0;
-//
-//             if(robot.a2.getVelocity() < 100)
-//                 inc2 = 0.7;
-//             else
-//                 inc2 = 0;
-//
-//             if(robot.distanta.getDistance(MM) <270){
-//                 inc1 = 1;
-//                 inc2 = -1;
-//             }
-//             robot.aspira1.setPower(-0.3 + inc1);
-//             robot.aspira2.setPower(0.3 + inc2);
-//
-//             robot.bagas.setPower(-1);
-//             robot.bagad.setPower(1);
-//             telemetry.addData("a1 velocity", robot.a1.getVelocity());
-//             telemetry.addData("a2 velocity", robot.a2.getVelocity());
-//             telemetry.addData("a1 power", robot.aspira1.getPower());
-//             telemetry.addData("a2 power", robot.aspira2.getPower());
-//             telemetry.update();
-//         }
-//
-//         robot.aspira1.setPower(0);
-//         robot.aspira2.setPower(0);
-//         robot.bagas.setPower(0);
-//         robot.bagad.setPower(0);
-//     }
-//
-//     if(tata) {
-//         if(robot.brat.getPosition() == 0.9)
-//             robot.brat.setPosition(0.2);
-//         else
-//             robot.brat.setPosition(0.9);
-//     }
-//
-// }
 
     public void Redreseaza(double target,boolean brate) {
         double MAXSPEED=0.25;
@@ -757,8 +589,10 @@ public class RegionalaRed extends LinearOpMode {
         }
         double speed = -pow;
         double initial = robot.placa.getDistance(MM);
+        double dinit = robot.back_left.getCurrentPosition();
         // double necesar = initial - dist;
         double rem = initial/2;    /// decelerez pe ultimii 15 cm
+        double limit = 20 * TICKSURI_PER_CM;
         robot.front_left.setPower(speed);
         robot.front_right.setPower(speed);
         robot.back_right.setPower(speed);
@@ -795,7 +629,7 @@ public class RegionalaRed extends LinearOpMode {
 
             }
 
-            if(robot.placa.getDistance(MM) < 40 && ver){
+            if((robot.placa.getDistance(MM) < 40 || Math.abs(robot.back_left.getCurrentPosition() - dinit) >= limit)&& ver){
                 robot.stopRobot();
                 ver = false;
             }
@@ -861,73 +695,62 @@ public class RegionalaRed extends LinearOpMode {
     private void Autonomie_Stanga(){
         gyroTurnV5(10-robot.imu.getAngularOrientation().firstAngle,false,0,0,null);
         mersTicksuri(70, Direction.FRONT,0.3,null,0,0,false,true,false);
-        mersTicksuri(43, Direction.BACK,1,robot.rotatie,30,0.6,false,false,true);
+        mersTicksuri(42, Direction.BACK,1,robot.rotatie,30,0.6,false,false,true);
 
         gyroTurnV5(90-robot.imu.getAngularOrientation().firstAngle, false,0,0,null);
 
 
-        mersTicksuri(190, Direction.BACK,1,null,0,0,false,false,false);
+        mersTicksuri(215, Direction.BACK,1,null,0,0,false,false,false);
         gyroTurnV5(180-robot.imu.getAngularOrientation().firstAngle,false,1,-900,robot.glisisus);
 
-        robot.placad.setPosition(0.35);  //0.35
-        robot.placas.setPosition(0.2);  //0.2
+        robot.placad.setPosition(0.35);
+        robot.placas.setPosition(0.2);
         mersDistanta(0.2,robot.rotatie,1500,0.6);
 
-        robot.placad.setPosition(0.5);  //0.35
-        robot.placas.setPosition(0.45);  //0.2
+        robot.placad.setPosition(0.5);
+        robot.placas.setPosition(0.45);
         sleep(300);
-        mersTicksuri(10, Direction.FRONT,0.6,null,0,0,false,false,false);
-/***
- * baa
- * count ticks pt inainte sa FACEM ARCUL CA SA STI, CAT NE INTOARCEM CU PLACA
- */
-        Arc(Direction.FRONT, Direction.RIGHT, 10, 90, robot.glisisus, -600, 0.7, robot.rotatie, 100, 0.7);// de fact simutan motor
+        //mersTicksuri(5, Direction.FRONT,1,null,0,0,false,false,false);
+
+
+        Arc(Direction.FRONT, Direction.RIGHT, 10, 90, robot.glisisus, -600, 0.8, robot.rotatie, 100, 0.7);// de fact simutan motor
 
         robot.placad.setPosition(0.2);
         robot.placas.setPosition(0);
         Redreseaza(90, false);
 
-        mersTicksuri(145 , Direction.FRONT,1,robot.glisisus,0,0.7,false,false,false);
-        gyroTurnV5(55-robot.imu.getAngularOrientation().firstAngle,false,0.4,200,robot.rotatie);
+        mersTicksuri(180 , Direction.FRONT,1,robot.glisisus,0,0.7,false,false,false);
+        gyroTurnV5(60-robot.imu.getAngularOrientation().firstAngle,false,0.4,200,robot.rotatie);
         // Redreseaza(300, false);
-        mersTicksuri(45, Direction.FRONT, 0.3, null,0,0,false,true,false);//ia stone
+        mersTicksuri(55, Direction.FRONT, 0.3, null,0,0,false,true,false);//ia stone
 
-        mersTicksuri(40, Direction.BACK,1,robot.rotatie,0,0.5,false,false,true); // se intoarce
+        mersTicksuri(35, Direction.BACK,1,robot.rotatie,0,0.5,false,false,true); // se intoarce
         gyroTurnV5(90-robot.imu.getAngularOrientation().firstAngle,false,0,0,null);
 
-        mersTicksuri(140, Direction.BACK,1,null,0,0,false,false,false);
-        mersTicksuri(20, Direction.BACK,1,robot.glisisus,-1150,0.8,false,false,false);
+        mersTicksuri(160, Direction.BACK,1,null,0,0,false,false,false);
+        mersTicksuri(20, Direction.BACK,1,robot.glisisus,-1150,1,false,false,false);
         robot.placad.setPosition(0.5);
         robot.placas.setPosition(0.45);
 
-        // robot.brat.setPosition(0.2);
-        //GoToPosition(robot.rotatie,1500,0.8);
-        // Gliseaza(robot.glisisus,-1150,0.8, robot.rotatie,1500,0.8);
 
         mersTicksuri(20, Direction.BACK,1,robot.rotatie,1500,0.8,false,false,false);
-        mersTicksuri(20 , Direction.BACK,1,robot.glisisus,-850,0.6,false,false,false);
-        /***
-         * BAAAA
-         * DE AFCUT SIMULTAN MERSUL DE #) CENTIMETRIIIIIII CU CELELALTE ACTIUNI(LA CARE PASTRAM ORDINEA)
-         */
+        mersTicksuri(20 , Direction.BACK,1,robot.glisisus,-850,0.7,false,false,false);
+
         robot.brat.setPosition(0.2);
         robot.placad.setPosition(0.2);
         robot.placas.setPosition(0);
 
-
         GoToPosition(robot.glisisus,-1200,1);
         GoToPosition(robot.rotatie, 50, 0.6);
 
-
-        mersTicksuri(90, Direction.FRONT,1,robot.glisisus,0,0.6,false,false,false);
-
+        mersTicksuri(90, Direction.FRONT,1,robot.glisisus,0,0.7,false,false,false);
 
     }
 
     private void Autonomie_Dreapta(){
-        gyroTurnV5(-25-robot.imu.getAngularOrientation().firstAngle,false,0,0,null);
+        gyroTurnV5(-22-robot.imu.getAngularOrientation().firstAngle,false,0,0,null);
         mersTicksuri(70, Direction.FRONT,0.3,null,0,0,false,true,false);
-        mersTicksuri(45, Direction.BACK,1,robot.rotatie,30,0.6,false,false,true);
+        mersTicksuri(40, Direction.BACK,1,robot.rotatie,30,0.6,false,false,true);
 
         gyroTurnV5(-90-robot.imu.getAngularOrientation().firstAngle, false,0,0,null);
 
@@ -935,42 +758,40 @@ public class RegionalaRed extends LinearOpMode {
         mersTicksuri(200, Direction.FRONT,1,null,0,0,false,false,false);
         gyroTurnV5(-180-robot.imu.getAngularOrientation().firstAngle,false,1,-900,robot.glisisus);
 
-        robot.placad.setPosition(0.35);  //0.35
-        robot.placas.setPosition(0.2);  //0.2
+        robot.placad.setPosition(0.35);
+        robot.placas.setPosition(0.2);
         mersDistanta(0.2,robot.rotatie,1500,0.6);
 
-        robot.placad.setPosition(0.5);  //0.35
-        robot.placas.setPosition(0.45);  //0.2
+        robot.placad.setPosition(0.5);
+        robot.placas.setPosition(0.45);
         sleep(300);
-        mersTicksuri(10, Direction.FRONT,0.6,null,0,0,false,false,false);
+        mersTicksuri(5, Direction.FRONT,1,null,0,0,false,false,false);
 
         Arc(Direction.FRONT, Direction.RIGHT, 10, 90, robot.glisisus, -600, 0.7, robot.rotatie, 100, 0.7);// de fact simutan motor
 
         robot.placad.setPosition(0.2);
         robot.placas.setPosition(0);
+
         Redreseaza(90, false);
 
-        mersTicksuri(165 , Direction.FRONT,1,robot.glisisus,0,0.7,false,false,false);
-        gyroTurnV5(55-robot.imu.getAngularOrientation().firstAngle,false,0.4,200,robot.rotatie);
+        mersTicksuri(152 , Direction.FRONT,1,robot.glisisus,0,0.7,false,false,false);
+        gyroTurnV5(60-robot.imu.getAngularOrientation().firstAngle,false,0.4,200,robot.rotatie);
         // Redreseaza(300, false);
-        mersTicksuri(45, Direction.FRONT, 0.3, null,0,0,false,true,false);//ia stone
+        mersTicksuri(48, Direction.FRONT, 0.3, null,0,0,false,true,false);//ia stone
 
-        mersTicksuri(35, Direction.BACK,1,robot.rotatie,0,0.5,false,false,true); // se intoarce
+        mersTicksuri(38, Direction.BACK,1,robot.rotatie,0,0.5,false,false,true); // se intoarce
         gyroTurnV5(90-robot.imu.getAngularOrientation().firstAngle,false,0,0,null);
 
         mersTicksuri(160, Direction.BACK,1,null,0,0,false,false,false);
-        mersTicksuri(30, Direction.BACK,1,robot.glisisus,-1150,0.8,false,false,false);
+
+        mersTicksuri(20, Direction.BACK,1,robot.glisisus,-1150,1,false,false,false);
         robot.placad.setPosition(0.5);
         robot.placas.setPosition(0.45);
 
-        // robot.brat.setPosition(0.2);
-        GoToPosition(robot.rotatie,1500,0.8);
-        // Gliseaza(robot.glisisus,-1150,0.8, robot.rotatie,1500,0.8);
-        mersTicksuri(30 , Direction.BACK,0.8,robot.glisisus,-850,0.6,false,false,false);
-        /***
-         * BAAAA
-         * DE AFCUT SIMULTAN MERSUL DE #) CENTIMETRIIIIIII CU CELELALTE ACTIUNI(LA CARE PASTRAM ORDINEA)
-         */
+
+        mersTicksuri(20, Direction.BACK,1,robot.rotatie,1500,0.8,false,false,false);
+        mersTicksuri(20 , Direction.BACK,1,robot.glisisus,-850,0.7,false,false,false);
+
         robot.brat.setPosition(0.2);
         robot.placad.setPosition(0.2);
         robot.placas.setPosition(0);
@@ -985,49 +806,46 @@ public class RegionalaRed extends LinearOpMode {
 
     private void Autonomie_Mijloc(){
         gyroTurnV5(-10,false,0,0,null);
-        mersTicksuri(60, Direction.FRONT,0.2,null,0,0,false,true,false);
+        mersTicksuri(60, Direction.FRONT,0.3,null,0,0,false,true,false);
         mersTicksuri(28, Direction.BACK,1,robot.rotatie,30,0.5,false,false,true);
 
         gyroTurnV5(-90-robot.imu.getAngularOrientation().firstAngle, false,0,0,null);
 
 
-        mersTicksuri(195, Direction.FRONT,1,null,0,0,false,false,false);
+        mersTicksuri(205, Direction.FRONT,1,null,0,0,false,false,false);
         gyroTurnV5(-180-robot.imu.getAngularOrientation().firstAngle,false,1,-900,robot.glisisus);
 
         mersDistanta(0.2,robot.rotatie,1500,0.6);
 
-        if(!isStopRequested() && opModeIsActive()) {
-            robot.placad.setPosition(0.5);
-            robot.placas.setPosition(0.45);
-            sleep(300);
-        }
-        mersTicksuri(15, Direction.FRONT,0.6,null,0,0,false,false,false);
+        robot.placad.setPosition(0.5);
+        robot.placas.setPosition(0.45);
+        sleep(300);
+        mersTicksuri(7, Direction.FRONT,1,null,0,0,false,false,false);
 
         Arc(Direction.FRONT, Direction.RIGHT, 10, 90, robot.glisisus, -600, 0.7, robot.rotatie, 100, 0.7);// de fact simutan motor
 
-        if(!isStopRequested() && opModeIsActive()) {
-            robot.placad.setPosition(0.2);
-            robot.placas.setPosition(0);
-        }
+        robot.placad.setPosition(0.2);
+        robot.placas.setPosition(0);
+
         Redreseaza(90, false);
 
-        mersTicksuri(160 , Direction.FRONT,1,null,0,0,false,false,false);
+        mersTicksuri(168 , Direction.FRONT,1,null,0,0,false,false,false);
         gyroTurnV5(55-robot.imu.getAngularOrientation().firstAngle,false,0.6,200,robot.rotatie);
         // Redreseaza(300, false);
         mersTicksuri(40, Direction.FRONT, 0.3, null,0,0,false,true,false);//ia stone
 
-        mersTicksuri(40, Direction.BACK,1,robot.rotatie,0,0.5,false,false,true); // se intoarce
+        mersTicksuri(30, Direction.BACK,1,robot.rotatie,0,0.5,false,false,true); // se intoarce
         gyroTurnV5(90-robot.imu.getAngularOrientation().firstAngle,false,0,0,null);
 
-        mersTicksuri(150, Direction.BACK,1,null,0,0,false,false,false);
-        mersTicksuri(30, Direction.BACK,1,robot.glisisus,-1150,0.8,false,false,false);
+        mersTicksuri(165, Direction.BACK,1,null,0,0,false,false,false);
+
+        mersTicksuri(20, Direction.BACK,1,robot.glisisus,-1150,1,false,false,false);
         robot.placad.setPosition(0.5);
         robot.placas.setPosition(0.45);
 
-        // robot.brat.setPosition(0.2);
-        GoToPosition(robot.rotatie,1500,0.8);
-        // Gliseaza(robot.glisisus,-1150,0.8, robot.rotatie,1500,0.8);
-        mersTicksuri(30 , Direction.BACK,0.8,robot.glisisus,-850,0.6,false,false,false);
+
+        mersTicksuri(20, Direction.BACK,1,robot.rotatie,1500,0.8,false,false,false);
+        mersTicksuri(20 , Direction.BACK,1,robot.glisisus,-850,0.7,false,false,false);
 
         robot.brat.setPosition(0.2);
         robot.placad.setPosition(0.2);
@@ -1050,7 +868,6 @@ public class RegionalaRed extends LinearOpMode {
         for(int i=1; i<=100; i++)
             cam1.openCameraDevice();
 
-
         cam1.setPipeline(new proces2());
         cam1.startStreaming(640,480);
 
@@ -1063,12 +880,13 @@ public class RegionalaRed extends LinearOpMode {
         //cam1.stopStreaming();
 
         mersTicksuri(35, Direction.FRONT,1, robot.rotatie, 200, 0.4, true, false, false);
-        if(motori=="left")
+        if(motori.equals("left")) {
             Autonomie_Stanga();
-        else if(motori=="right")
+        } else if(motori.equals("right")) {
             Autonomie_Dreapta();
-        else if(motori=="middle")
+        } else if(motori.equals("middle")) {
             Autonomie_Mijloc();
+        }
 
     }
 }

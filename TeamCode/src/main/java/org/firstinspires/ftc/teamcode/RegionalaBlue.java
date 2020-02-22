@@ -577,8 +577,10 @@ public class RegionalaBlue extends LinearOpMode {
         }
         double speed = -pow;
         double initial = robot.placa.getDistance(MM);
+        double dinit = robot.back_left.getCurrentPosition();
        // double necesar = initial - dist;
         double rem = initial/2;    /// decelerez pe ultimii 15 cm
+        double limit = 20 * TICKSURI_PER_CM;
         robot.front_left.setPower(speed);
         robot.front_right.setPower(speed);
         robot.back_right.setPower(speed);
@@ -616,7 +618,7 @@ public class RegionalaBlue extends LinearOpMode {
 
             }
 
-            if(robot.placa.getDistance(MM) < 40 && ver){
+            if((robot.placa.getDistance(MM) < 40 || Math.abs(robot.back_left.getCurrentPosition() - dinit) >= limit)&& ver){
                 robot.stopRobot();
                 ver = false;
             }
@@ -685,12 +687,12 @@ public class RegionalaBlue extends LinearOpMode {
     private void Autonomie_Dreapta(){
         gyroTurnV5(-10-robot.imu.getAngularOrientation().firstAngle,false,0,0,null);
         mersTicksuri(70, Direction.FRONT,0.3,null,0,0,false,true,false);
-        mersTicksuri(45, Direction.BACK,1,robot.rotatie,30,0.6,false,false,true);
+        mersTicksuri(47, Direction.BACK,1,robot.rotatie,30,0.6,false,false,true);
 
         gyroTurnV5(-90-robot.imu.getAngularOrientation().firstAngle, false,0,0,null);
 
 
-        mersTicksuri(200, Direction.BACK,1,null,0,0,false,false,false);
+        mersTicksuri(210, Direction.BACK,1,null,0,0,false,false,false);
         gyroTurnV5(-180-robot.imu.getAngularOrientation().firstAngle,false,1,-900,robot.glisisus);
 
         robot.placad.setPosition(0.35);  //0.35
@@ -699,19 +701,16 @@ public class RegionalaBlue extends LinearOpMode {
 
         robot.placad.setPosition(0.5);  //0.35
         robot.placas.setPosition(0.45);  //0.2
-        sleep(1000);
-        mersTicksuri(10, Direction.FRONT,0.6,null,0,0,false,false,false);
-/***
- * baa
- * count ticks pt inainte sa FACEM ARCUL CA SA STI, CAT NE INTOARCEM CU PLACA
- */
+        sleep(300);
+        mersTicksuri(5, Direction.FRONT,1,null,0,0,false,false,false);
+
         Arc(Direction.FRONT, Direction.LEFT, 10, 90, robot.glisisus, -600, 0.7, robot.rotatie, 50, 0.5);// de fact simutan motor
 
         robot.placad.setPosition(0.2);
         robot.placas.setPosition(0);
         Redreseaza(270, false);
 
-        mersTicksuri(165 , Direction.FRONT,1,robot.glisisus,0,0.7,false,false,false);
+        mersTicksuri(185 , Direction.FRONT,1,robot.glisisus,0,0.7,false,false,false);
         gyroTurnV5(-55-robot.imu.getAngularOrientation().firstAngle,false,0.4,200,robot.rotatie);
         // Redreseaza(300, false);
         mersTicksuri(45, Direction.FRONT, 0.3, null,0,0,false,true,false);//ia stone
@@ -719,19 +718,17 @@ public class RegionalaBlue extends LinearOpMode {
         mersTicksuri(35, Direction.BACK,1,robot.rotatie,0,0.5,false,false,true); // se intoarce
         gyroTurnV5(-90-robot.imu.getAngularOrientation().firstAngle,false,0,0,null);
 
-        mersTicksuri(160, Direction.BACK,1,null,0,0,false,false,false);
-        mersTicksuri(30, Direction.BACK,1,robot.glisisus,-1150,0.8,false,false,false);
+        mersTicksuri(180, Direction.BACK,1,null,0,0,false,false,false);
+        mersTicksuri(20, Direction.BACK,1,robot.glisisus,-1150,0.8,false,false,false);
         robot.placad.setPosition(0.5);
         robot.placas.setPosition(0.45);
 
         // robot.brat.setPosition(0.2);
-        GoToPosition(robot.rotatie,1500,0.8);
+        // GoToPosition(robot.rotatie,1500,0.8);
+        mersTicksuri(20,Direction.BACK,1,robot.rotatie,1500,0.8,false,false,false);
         // Gliseaza(robot.glisisus,-1150,0.8, robot.rotatie,1500,0.8);
-        mersTicksuri(30 , Direction.BACK,0.8,robot.glisisus,-850,0.6,false,false,false);
-        /***
-         * BAAAA
-         * DE AFCUT SIMULTAN MERSUL DE #) CENTIMETRIIIIIII CU CELELALTE ACTIUNI(LA CARE PASTRAM ORDINEA)
-         */
+        mersTicksuri(20 , Direction.BACK,1,robot.glisisus,-850,0.8,false,false,false);
+
         robot.brat.setPosition(0.2);
         robot.placad.setPosition(0.2);
         robot.placas.setPosition(0);
@@ -747,12 +744,12 @@ public class RegionalaBlue extends LinearOpMode {
     private void Autonomie_Mijloc(){
         gyroTurnV5(10,false,0,0,null);
         mersTicksuri(60, Direction.FRONT,0.2,null,0,0,false,true,false);
-        mersTicksuri(31, Direction.BACK,1,robot.rotatie,30,0.5,false,false,true);
+        mersTicksuri(33, Direction.BACK,1,robot.rotatie,30,0.5,false,false,true);
 
         gyroTurnV5(90-robot.imu.getAngularOrientation().firstAngle, false,0,0,null);
 
 
-        mersTicksuri(190, Direction.FRONT,1,null,0,0,false,false,false);
+        mersTicksuri(205, Direction.FRONT,1,null,0,0,false,false,false);
         gyroTurnV5(180-robot.imu.getAngularOrientation().firstAngle,false,1,-900,robot.glisisus);
 
         mersDistanta(0.2,robot.rotatie,1500,0.6);
@@ -760,7 +757,7 @@ public class RegionalaBlue extends LinearOpMode {
         robot.placad.setPosition(0.5);
         robot.placas.setPosition(0.45);
         sleep(300);
-        mersTicksuri(13, Direction.FRONT,0.6,null,0,0,false,false,false);
+        mersTicksuri(5, Direction.FRONT,0.6,null,0,0,false,false,false);
 
         Arc(Direction.FRONT, Direction.LEFT, 10, 90, robot.glisisus, -600, 0.7, robot.rotatie, 50, 0.7);// de fact simutan motor
 
@@ -768,15 +765,15 @@ public class RegionalaBlue extends LinearOpMode {
         robot.placas.setPosition(0);
         Redreseaza(270, false);
 
-        mersTicksuri(150, Direction.FRONT,1,robot.glisisus,0,0.7,false,false,false);
+        mersTicksuri(167, Direction.FRONT,1,robot.glisisus,0,0.7,false,false,false);
         gyroTurnV5(-55-robot.imu.getAngularOrientation().firstAngle,false,0.6,200,robot.rotatie);
        // Redreseaza(300, false);
         mersTicksuri(45, Direction.FRONT, 0.3, null,0,0,false,true,false);//ia stone
 
-        mersTicksuri(40, Direction.BACK,1,robot.rotatie,0,0.5,false,false,true); // se intoarce
+        mersTicksuri(35, Direction.BACK,1,robot.rotatie,0,0.5,false,false,true); // se intoarce
         gyroTurnV5(-90-robot.imu.getAngularOrientation().firstAngle,false,0,0,null);
 
-        mersTicksuri(150, Direction.BACK,1,null,0,0,false,false,false);
+        mersTicksuri(165, Direction.BACK,1,null,0,0,false,false,false);
         mersTicksuri(30, Direction.BACK,1,robot.glisisus,-1150,0.8,false,false,false);
         robot.placad.setPosition(0.5);
         robot.placas.setPosition(0.45);
@@ -805,12 +802,13 @@ public class RegionalaBlue extends LinearOpMode {
 
         gyroTurnV5(25-robot.imu.getAngularOrientation().firstAngle,false,0,0,null);
         mersTicksuri(70, Direction.FRONT,0.3,null,0,0,false,true,false);
-        mersTicksuri(43, Direction.BACK,1,robot.rotatie,30,0.6,false,false,true);
+        mersTicksuri(46, Direction.BACK,1,robot.rotatie,30,0.6,false,false,true);
 
         gyroTurnV5(90-robot.imu.getAngularOrientation().firstAngle, false,0,0,null);
+        Redreseaza(90,false);
 
 
-        mersTicksuri(182, Direction.FRONT,1,null,0,0,false,false,false);
+        mersTicksuri(202, Direction.FRONT,1,null,0,0,false,false,false);
         gyroTurnV5(180-robot.imu.getAngularOrientation().firstAngle,false,1,-900,robot.glisisus);
 
         robot.placad.setPosition(0.35);  //0.35
@@ -820,40 +818,32 @@ public class RegionalaBlue extends LinearOpMode {
         robot.placad.setPosition(0.5);  //0.35
         robot.placas.setPosition(0.45);  //0.2
         sleep(300);
-        mersTicksuri(10, Direction.FRONT,0.6,null,0,0,false,false,false);
-/***
- * baa
- * count ticks pt inainte sa FACEM ARCUL CA SA STI, CAT NE INTOARCEM CU PLACA
- */
+        mersTicksuri(10, Direction.FRONT,1,null,0,0,false,false,false);
+
+
         Arc(Direction.FRONT, Direction.LEFT, 10, 90, robot.glisisus, -600, 0.7, robot.rotatie, 50, 0.7);// de fact simutan motor
 
         robot.placad.setPosition(0.2);
         robot.placas.setPosition(0);
         Redreseaza(270, false);
 
-        mersTicksuri(140 , Direction.FRONT,1,robot.glisisus,0,0.7,false,false,false);
+        mersTicksuri(154 , Direction.FRONT,1,robot.glisisus,0,0.7,false,false,false);
         gyroTurnV5(-55-robot.imu.getAngularOrientation().firstAngle,false,0.4,200,robot.rotatie);
         // Redreseaza(300, false);
-        mersTicksuri(45, Direction.FRONT, 0.3, null,0,0,false,true,false);//ia stone
+        mersTicksuri(48, Direction.FRONT, 0.3, null,0,0,false,true,false);//ia stone
 
         mersTicksuri(40, Direction.BACK,1,robot.rotatie,0,0.5,false,false,true); // se intoarce
         gyroTurnV5(-90-robot.imu.getAngularOrientation().firstAngle,false,0,0,null);
 
-        mersTicksuri(140, Direction.BACK,1,null,0,0,false,false,false);
+        mersTicksuri(165, Direction.BACK,1,null,0,0,false,false,false);
         mersTicksuri(20, Direction.BACK,1,robot.glisisus,-1150,0.8,false,false,false);
         robot.placad.setPosition(0.5);
         robot.placas.setPosition(0.45);
 
-        // robot.brat.setPosition(0.2);
-        //GoToPosition(robot.rotatie,1500,0.8);
-        // Gliseaza(robot.glisisus,-1150,0.8, robot.rotatie,1500,0.8);
 
         mersTicksuri(20, Direction.BACK,1,robot.rotatie,1500,0.8,false,false,false);
         mersTicksuri(20 , Direction.BACK,1,robot.glisisus,-850,0.6,false,false,false);
-        /***
-         * BAAAA
-         * DE AFCUT SIMULTAN MERSUL DE #) CENTIMETRIIIIIII CU CELELALTE ACTIUNI(LA CARE PASTRAM ORDINEA)
-         */
+
         robot.brat.setPosition(0.2);
         robot.placad.setPosition(0.2);
         robot.placas.setPosition(0);
@@ -892,12 +882,12 @@ public class RegionalaBlue extends LinearOpMode {
        //cam1.stopStreaming();
 
        mersTicksuri(35, Direction.FRONT,1, robot.rotatie, 200, 0.4, true, false, false);
-       if(motori=="left")
+       if(motori.equals("left")) {
            Autonomie_Stanga();
-       else if(motori=="right")
+       } else if(motori.equals("right")) {
            Autonomie_Dreapta();
-       else if(motori=="middle")
+       } else if(motori.equals("middle")) {
            Autonomie_Mijloc();
-
+       }
     }
 }
